@@ -13,8 +13,8 @@ APP_NAME = 'Test/TestApp'
 TOPIC = 'vessels-v2/#'
 
 ######## influxdb #########
-BUCKET = "ais-test"
-SENSOR = "Digitraffic-ais"
+BUCKET = "digitraffic-ais"
+SENSOR = "digitraffic-ais"
 
 #laod credentials
 with open('credentials.json') as json_file:
@@ -34,14 +34,14 @@ def write_data(message,bucket,sensor_name):
         payload = json.loads(message.payload.decode('utf-8'))
         id = topic_hierarchy[1]
         topic = topic_hierarchy[2]
-        print(id,topic)
+        #print(id,topic)
 
         #loop over points in payload
         for key, value in payload.items():
             if key == 'time':
                 key = 'timepoint'
             point = (
-                Point(sensor_name).tag("mmsi",id).field(key,value)
+                Point(sensor_name).tag(id,topic).field(key,value)
             )
             influx_write_api.write(bucket=bucket, org="Home", record=point)
    
@@ -75,7 +75,14 @@ digitraffic_client.tls_set()
 
 #### Connect to Digitraffic API ####
 digitraffic_client.connect(DIGITRAFFIC_HOST, DIGITRAFFIC_PORT)
+
 digitraffic_client.loop_start()
-time.sleep(60*10)
-digitraffic_client.loop_stop()
-digitraffic_client.disconnect()
+
+if __name__ == "__main__":
+    digitraffic_client.loop_start()
+    while True:
+        time.sleep(1)
+
+#time.sleep(60*10)
+#digitraffic_client.loop_stop()
+#digitraffic_client.disconnect()
