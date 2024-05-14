@@ -1,8 +1,9 @@
 import uuid
+import dotenv, os
 import paho.mqtt.client as mqtt
 import time
 import json
-import influxdb_client, os
+import influxdb_client
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
@@ -13,13 +14,12 @@ TOPIC = 'vessels-v2/#'
 BUCKET = "digitraffic-ais"
 SENSOR = "digitraffic-ais"
 
-#laod credentials
-with open('credentials.json') as json_file:
-  credentials = json.load(json_file)
-  PORT = 8086
-  TOKEN = str(credentials["token"])
-  ORG = credentials["org"]
-  HOST = credentials["host"]
+#load environment variables
+dotenv.load_dotenv('.env')
+PORT = os.environ["INFLUX_PORT"]
+TOKEN = os.environ["INFLUX_TOKEN"]
+ORG = os.environ["INFLUX_ORG"]
+HOST = os.environ["INFLUX_HOST"]
 
 #create client
 influx_client = influxdb_client.InfluxDBClient(url=HOST, token=TOKEN, org=ORG)

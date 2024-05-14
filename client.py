@@ -1,8 +1,9 @@
 import uuid
+import dotenv, os
 import paho.mqtt.client as mqtt
 import time
 import json
-import influxdb_client, os
+import influxdb_client
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
@@ -13,40 +14,38 @@ APP_NAME = 'Test/TestApp'
 TOPIC = 'vessels-v2/#'
 
 ######## influxdb #########
-BUCKET = "digitraffic-ais"
-SENSOR = "digitraffic-ais"
+BUCKET = "digitraffic-api"
+SENSOR = "ais"
 
-#laod credentials
-with open('credentials.json') as json_file:
-  credentials = json.load(json_file)
-  PORT = 8086
-  TOKEN = str(credentials["token"])
-  ORG = credentials["org"]
-  HOST = credentials["host"]
+#load environment variables
+dotenv.load_dotenv('.env')
+PORT = os.environ["INFLUX_PORT"]
+TOKEN = os.environ["INFLUX_TOKEN"]
+ORG = os.environ["INFLUX_ORG"]
+HOST = os.environ["INFLUX_HOST"]
 
 #### utils #####
-def write_data(message,bucket,sensor_name):
+def write_data(message,org,bucket,sensor):
     '''Writes data to influxdb bucket'''
-    topic_hierarchy = str(message.topic).split("/")
-    #check if
-    if len(topic_hierarchy)>2:
-        #convert string to dict
+    topics = str(message.topic).split("/")
+    if len(topics)>2:
+        tags = {
+            "mmsi": topics[1],
+            "type": topics[2]
+        }
         payload = json.loads(message.payload.decode('utf-8'))
-        id = topic_hierarchy[1]
-        topic = topic_hierarchy[2]
-        #print(id,topic)
-
-        #loop over points in payload
+        point = Point(sensor)
+        # add tags
+        for key, value in tags.items():
+            point.tag(key,value)
+        # add fields
         for key, value in payload.items():
-            if key == 'time':
-                key = 'timepoint'
-            point = (
-                Point(sensor_name).tag(id,topic).field(key,value)
-            )
-            influx_write_api.write(bucket=bucket, org="Home", record=point)
+            point.field(key,value)
+        # write to db
+        influx_write_api.write(bucket=bucket, org=org, record=point)
    
 def on_message(client, userdata, message):
-    write_data(message,BUCKET,SENSOR)
+    write_data(message,ORG,BUCKET,SENSOR)
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -82,7 +81,3 @@ if __name__ == "__main__":
     digitraffic_client.loop_start()
     while True:
         time.sleep(1)
-
-#time.sleep(60*10)
-#digitraffic_client.loop_stop()
-#digitraffic_client.disconnect()
