@@ -35,6 +35,7 @@ def write_data(message,org,bucket,sensor):
         }
         payload = json.loads(message.payload.decode('utf-8'))
         point = Point(sensor)
+        point.time(time.time_ns())
         # add tags
         for key, value in tags.items():
             point.tag(key,value)
