@@ -19,7 +19,6 @@ SENSOR = "ais"
 
 #load environment variables
 dotenv.load_dotenv('.env')
-PORT = os.environ["INFLUX_PORT"]
 TOKEN = os.environ["INFLUX_TOKEN"]
 ORG = os.environ["INFLUX_ORG"]
 HOST = os.environ["INFLUX_HOST"]
