@@ -14,7 +14,7 @@ APP_NAME = 'Test/TestApp'
 TOPIC = 'vessels-v2/#'
 
 ######## influxdb #########
-BUCKET = "digitraffic-api"
+BUCKET = "digitraffic-ais"
 SENSOR = "ais"
 
 #load environment variables
@@ -45,6 +45,7 @@ def write_data(message,org,bucket,sensor):
         influx_write_api.write(bucket=bucket, org=org, record=point)
    
 def on_message(client, userdata, message):
+
     write_data(message,ORG,BUCKET,SENSOR)
 
 def on_connect(client, userdata, flags, rc):
