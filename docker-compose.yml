@@ -1,0 +1,13 @@
+services:
+
+  ais_to_influxdb:
+    container_name: ais_to_influxdb
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    restart: unless-stopped
+    network_mode: host # easiest way for grafana to access influxdb
+    environment:
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
+      - INFLUX_ORG=${INFLUX_ORG}
+      - INFLUX_HOST=${INFLUX_HOST}

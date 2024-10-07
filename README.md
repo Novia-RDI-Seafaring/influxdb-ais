@@ -1,6 +1,7 @@
 # influxdb-ais
 A simple client that receives AIS data and publishes it to influxdb
 
+
 # Setup
 1. **Install (Windows)**. Download and extract [influxdb v2.x](https://docs.influxdata.com/influxdb/v2/install/) to `<your path>/influxdata/`.
 
@@ -31,3 +32,11 @@ A simple client that receives AIS data and publishes it to influxdb
 7. Run `client.py` to start writing AIS data.
 
 
+# Run as docker container
+Requires:
+1. influxdb is running 
+2. env variables are specified in `.env` file that is located in same directory as docker-compose.yml
+3. client.py is adjusted according to users needs
+
+Start docker in background:
+```docker compose up -d```

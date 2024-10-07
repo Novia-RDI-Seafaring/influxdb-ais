@@ -10,7 +10,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 # This is an example client for retrieving AIS data from the Digitraffic API
 # https://www.digitraffic.fi/en/marine-traffic/
 
-APP_NAME = 'Test/TestApp'
+APP_NAME = 'novia_rdi'
 TOPIC = 'vessels-v2/#'
 
 ######## influxdb #########
@@ -50,7 +50,6 @@ def on_message(client, userdata, message):
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print('Connected')
         client.subscribe(TOPIC)
         print("Subscribing to topic:", TOPIC)
     else:
